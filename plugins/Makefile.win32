@@ -1,0 +1,26 @@
+CC = i586-mingw32msvc-gcc -Wall -O2 -mms-bitfields -mwindows
+AS = i586-mingw32msvc-as
+DLLWRAP = i586-mingw32msvc-dllwrap
+PKG_CONFIG_PATH = /usr/i586-mingw32msvc/lib/pkgconfig
+
+CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+	pkg-config --cflags gtk+-win32-2.0 gmodule-2.0)
+LIBS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+	pkg-config --libs gtk+-win32-2.0 gmodule-2.0)
+
+PLUG_SRC = libplug_01.c
+PLUG_OBJ = $(PLUG_SRC:.c=.o)
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $< $(LIBS)
+
+DLLWRAP_FLAGS = --as=$(AS) --export-all-symbols --driver-name $(CC) -s
+
+# build libplug_01.dll, and create a corresponding import library
+# libplug_01.a
+
+libplug_01.dll: $(LIBOBJ) $(MINOBJ) 
+	$(DLLWRAP) $(DLLWRAP_FLAGS) \
+	--output-def libplug_01.def --implib libplug_01.a \
+	-o $@ $^ -lm -L$(imports) -lxml2 -lintl \
+	-lmingwex $(GLIBLIB) $(LAPACK_LIBS)

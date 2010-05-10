@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# gcc "-g" opcioja a debuggolashoz szukseges szimbolumtablat kapcsolja be
+
+[ -f glib-module ] && rm glib-module
+gcc -Wall -g glib-module.c `pkg-config --cflags --libs gtk+-2.0 gmodule-2.0` -o glib-module
