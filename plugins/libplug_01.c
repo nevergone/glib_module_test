@@ -14,6 +14,8 @@
 
 int module_variable = 42;
 
+G_MODULE_EXPORT extern gchar module_text[] = "This is module_text";
+
 G_MODULE_EXPORT extern gint module_test (gchar * szoveg)  {
     GtkWidget * plugin_window = NULL;
     g_message ("this is module text: %s\n", szoveg);
@@ -23,4 +25,3 @@ G_MODULE_EXPORT extern gint module_test (gchar * szoveg)  {
     gtk_widget_show (plugin_window);
     return module_variable;
 }
-

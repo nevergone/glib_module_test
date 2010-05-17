@@ -15,6 +15,7 @@ GModule * module = NULL;
 gchar * module_path;
 gint module_results = 0;
 int (*module_func) (gchar *);
+gchar * module_text = NULL;
 
 gint delete_event (GtkWidget * widget,  GdkEvent * event,  gpointer data)  {
   gtk_main_quit ();
@@ -37,21 +38,34 @@ int main (int argc, char * argv[])  {
   module_path = g_new0 (gchar, 200);
   module_path = g_module_build_path ("plugins", "plug_01");
   module = g_module_open (module_path, G_MODULE_BIND_LAZY);
-  if (module != NULL)  g_message ("open\n");
+  if (module != NULL)
+    g_message ("open\n");
   else {
         g_error ("module path not found: %s", module_path);
         return EXIT_FAILURE;
   }
   g_message ("module name: %s\n", g_module_name (module));
   g_message ("module path: %s\n", module_path);
-  if (g_module_symbol (module, "module_test", (gpointer*)&module_func))  g_message ("symbol\n");
+  /* module function */
+  if (g_module_symbol (module, "module_test", (gpointer*)&module_func))
+    g_message ("func symbol\n");
   else {
-        g_error ("symbol not found");
+        g_error ("module_test symbol not found");
         return EXIT_FAILURE;
   }
   module_results = module_func ("function_parameter");
   g_message ("module results: %d\n", module_results);
-  if (g_module_close (module))  g_message ("close\n");
+  /* module text constans */
+  if (g_module_symbol (module, "module_text", (gpointer*)&module_text))
+    g_message ("text symbol\n");
+  else {
+        g_error ("module_text symbol not found");
+        return EXIT_FAILURE;
+  }
+  g_message ("module text constans: %s", module_text);
+  if (g_module_close (module))
+    g_message ("close\n");
+  g_message ("last module error: %s", g_module_error());
   g_free (module_path);
   main_window_create ();
   gtk_widget_show_all (main_window);
